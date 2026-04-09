@@ -34,3 +34,11 @@ export type {
   HistoryAction,
   SwapLeg,
 } from "./internal/action-classifier.js";
+export {
+  computeCommitmentHash,
+  generateEscrowSecret,
+  buildDepositInvoke,
+  buildClaimInvoke,
+  buildClaimUrl,
+  parseClaimUrl,
+} from "./escrow.js";
