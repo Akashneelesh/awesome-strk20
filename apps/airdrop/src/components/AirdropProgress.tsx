@@ -27,20 +27,24 @@ function phaseLabel(phase: AirdropPhase): string {
   }
 }
 
-function statusBadge(status: RecipientEntry["status"]): string {
+function phaseClass(phase: AirdropPhase): string {
+  if (phase.phase === "complete") return "phase-complete";
+  if (phase.phase === "error") return "phase-error";
+  return "";
+}
+
+function badgeClass(status: RecipientEntry["status"]): string {
+  return `neon-badge neon-badge-${status}`;
+}
+
+function statusLabel(status: RecipientEntry["status"]): string {
   switch (status) {
-    case "pending":
-      return "...";
-    case "proving":
-      return "Proving";
-    case "submitted":
-      return "Submitted";
-    case "confirmed":
-      return "Confirmed";
-    case "done":
-      return "Done";
-    case "failed":
-      return "Failed";
+    case "pending": return "...";
+    case "proving": return "Proving";
+    case "submitted": return "Submitted";
+    case "confirmed": return "Confirmed";
+    case "done": return "Done";
+    case "failed": return "Failed";
   }
 }
 
@@ -49,17 +53,17 @@ export function AirdropProgress({ phase, recipients, onReset }: AirdropProgressP
     phase.phase !== "idle" && phase.phase !== "complete" && phase.phase !== "error";
 
   return (
-    <div>
-      <h3>Airdrop Progress</h3>
-      <p>
-        <strong>{phaseLabel(phase)}</strong>
+    <div style={{ marginTop: "16px" }}>
+      <h3 className="neon-subheading">Airdrop Progress</h3>
+      <p className={`neon-phase-label ${phaseClass(phase)}`}>
+        {phaseLabel(phase)}
       </p>
 
       {recipients.length > 0 && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table className="neon-table" style={{ marginTop: "12px" }}>
           <thead>
             <tr>
-              <th style={{ textAlign: "left" }}>Recipient</th>
+              <th>Recipient</th>
               <th style={{ textAlign: "right" }}>Amount</th>
               <th style={{ textAlign: "center" }}>Status</th>
             </tr>
@@ -70,15 +74,16 @@ export function AirdropProgress({ phase, recipients, onReset }: AirdropProgressP
                 <td>
                   <code>{truncateAddress(recipient.address)}</code>
                 </td>
-                <td style={{ textAlign: "right" }}>{recipient.amount.toString()}</td>
-                <td
-                  style={{
-                    textAlign: "center",
-                    color: recipient.status === "failed" ? "red" : recipient.status === "done" ? "green" : "inherit",
-                  }}
-                >
-                  {statusBadge(recipient.status)}
-                  {recipient.error && <div style={{ fontSize: "0.8em" }}>{recipient.error}</div>}
+                <td className="amount">{recipient.amount.toString()}</td>
+                <td className="status-center">
+                  <span className={badgeClass(recipient.status)}>
+                    {statusLabel(recipient.status)}
+                  </span>
+                  {recipient.error && (
+                    <div style={{ fontSize: "0.75rem", color: "var(--red)", marginTop: "4px" }}>
+                      {recipient.error}
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -87,7 +92,7 @@ export function AirdropProgress({ phase, recipients, onReset }: AirdropProgressP
       )}
 
       {!isRunning && phase.phase !== "idle" && (
-        <button onClick={onReset} style={{ marginTop: "8px" }}>
+        <button className="neon-btn" onClick={onReset} style={{ marginTop: "12px" }}>
           Reset
         </button>
       )}

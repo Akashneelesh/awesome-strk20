@@ -116,11 +116,11 @@ export function RecipientList({ rows, onChange, disabled, adminBalance }: Recipi
 
   return (
     <div>
-      <h3>Recipients</h3>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <h3 className="neon-subheading">Recipients</h3>
+      <table className="neon-table">
         <thead>
           <tr>
-            <th style={{ textAlign: "left" }}>Address</th>
+            <th>Address</th>
             <th style={{ textAlign: "right" }}>Amount</th>
             <th style={{ width: "40px" }}></th>
           </tr>
@@ -130,30 +130,30 @@ export function RecipientList({ rows, onChange, disabled, adminBalance }: Recipi
             <tr key={index}>
               <td>
                 {disabled ? (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <span className="neon-inline-flex">
                     <code>{truncateAddress(row.address)}</code>
                     <button
+                      className="neon-btn neon-btn-sm neon-btn-copy"
                       onClick={() => navigator.clipboard.writeText(row.address)}
                       title="Copy full address"
-                      style={{ cursor: "pointer", fontSize: "0.8em", padding: "2px 4px" }}
                     >
                       Copy
                     </button>
                   </span>
                 ) : (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", width: "100%" }}>
+                  <span className="neon-inline-flex" style={{ width: "100%" }}>
                     <input
+                      className="neon-input"
                       type="text"
                       value={row.address}
                       onChange={(event) => updateRow(index, "address", event.target.value)}
                       placeholder="0x..."
-                      style={{ flex: 1, fontFamily: "monospace" }}
                     />
                     {row.address && (
                       <button
+                        className="neon-btn neon-btn-sm neon-btn-copy"
                         onClick={() => navigator.clipboard.writeText(row.address)}
                         title="Copy full address"
-                        style={{ cursor: "pointer", fontSize: "0.8em", padding: "2px 4px" }}
                       >
                         Copy
                       </button>
@@ -166,17 +166,23 @@ export function RecipientList({ rows, onChange, disabled, adminBalance }: Recipi
                   <code>{row.amount}</code>
                 ) : (
                   <input
+                    className="neon-input"
                     type="text"
                     value={row.amount}
                     onChange={(event) => updateRow(index, "amount", event.target.value)}
                     placeholder="0"
-                    style={{ width: "100%", textAlign: "right" }}
+                    style={{ textAlign: "right" }}
                   />
                 )}
               </td>
               <td>
                 {!disabled && (
-                  <button onClick={() => removeRow(index)} title="Remove">
+                  <button
+                    className="neon-btn neon-btn-sm"
+                    onClick={() => removeRow(index)}
+                    title="Remove"
+                    style={{ color: "var(--red)", borderColor: "var(--red-dim)" }}
+                  >
                     x
                   </button>
                 )}
@@ -186,36 +192,34 @@ export function RecipientList({ rows, onChange, disabled, adminBalance }: Recipi
         </tbody>
         <tfoot>
           <tr>
-            <td style={{ textAlign: "left" }}>
-              <strong>Total: {rows.length} recipients</strong>
-            </td>
-            <td style={{ textAlign: "right" }}>
-              <strong>{totalAmount.toString()}</strong>
-            </td>
+            <td>Total: {rows.length} recipients</td>
+            <td className="amount"><strong>{totalAmount.toString()}</strong></td>
             <td></td>
           </tr>
         </tfoot>
       </table>
 
       {!disabled && (
-        <div style={{ marginTop: "8px" }}>
-          <button onClick={addRow}>+ Add Row</button>
-          <details style={{ marginTop: "8px" }}>
+        <div style={{ marginTop: "12px", display: "flex", gap: "8px", alignItems: "flex-start", flexDirection: "column" }}>
+          <button className="neon-btn neon-btn-sm" onClick={addRow}>+ Add Row</button>
+          <details className="neon-details">
             <summary>Paste CSV</summary>
             <textarea
+              className="neon-textarea"
               value={csvInput}
               onChange={(event) => setCsvInput(event.target.value)}
               placeholder={"0x1234...,500\n0x5678...,300"}
               rows={4}
-              style={{ width: "100%", fontFamily: "monospace" }}
             />
-            <button onClick={handleCsvPaste}>Import CSV</button>
+            <button className="neon-btn neon-btn-sm" onClick={handleCsvPaste} style={{ marginTop: "6px" }}>
+              Import CSV
+            </button>
           </details>
         </div>
       )}
 
       {errors.length > 0 && (
-        <div style={{ color: "red", marginTop: "8px" }}>
+        <div className="neon-alert neon-alert-error" style={{ marginTop: "12px" }}>
           {errors.map((error, index) => (
             <div key={index}>{error}</div>
           ))}

@@ -57,19 +57,19 @@ export function ClaimantPanel({
 
   return (
     <div>
-      <h2>Claim Airdrop</h2>
+      <h2 className="neon-heading">Claim Airdrop</h2>
 
       <StatusBar txHash={state.lastTxHash} error={state.lastError} />
 
       {state.registered === false && (
-        <div style={{ padding: "12px", marginBottom: "12px", background: "#fff3cd", border: "1px solid #ffc107", borderRadius: "4px" }}>
-          <p style={{ margin: "0 0 8px 0" }}>
+        <div className="neon-alert neon-alert-warning">
+          <p style={{ margin: "0 0 10px 0" }}>
             <strong>Not registered.</strong> You must register your viewing key in the privacy pool before you can receive or claim private tokens.
           </p>
           <button
+            className="neon-btn neon-btn-lime"
             onClick={register}
             disabled={state.registering}
-            style={{ padding: "6px 16px" }}
           >
             {state.registering ? "Registering..." : "Register in Pool"}
           </button>
@@ -77,26 +77,28 @@ export function ClaimantPanel({
       )}
 
       {state.registered === null && (
-        <p>Checking registration status...</p>
+        <p style={{ color: "var(--text-dim)", fontSize: "0.85rem" }}>Checking registration status...</p>
       )}
 
       {state.registered && (
-        <div style={{ marginBottom: "12px" }}>
-          <strong>Private Balance: </strong>
-          <code>{state.discovering ? "discovering..." : state.totalBalance.toString()}</code>
-          <button onClick={discover} disabled={state.discovering} style={{ marginLeft: "8px" }}>
+        <div className="neon-balance">
+          <span className="label">Private Balance</span>
+          <span className={`value ${state.discovering ? "loading" : ""}`}>
+            {state.discovering ? "discovering..." : state.totalBalance.toString()}
+          </span>
+          <button className="neon-btn neon-btn-sm" onClick={discover} disabled={state.discovering}>
             Refresh
           </button>
         </div>
       )}
 
       {state.registered && state.notes.length > 0 && (
-        <div style={{ marginBottom: "12px" }}>
-          <h3>Notes ({state.notes.length})</h3>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div className="neon-panel" style={{ marginBottom: "16px" }}>
+          <h3 className="neon-subheading" style={{ marginTop: 0 }}>Notes ({state.notes.length})</h3>
+          <table className="neon-table">
             <thead>
               <tr>
-                <th style={{ textAlign: "left" }}>#</th>
+                <th>#</th>
                 <th style={{ textAlign: "right" }}>Amount</th>
               </tr>
             </thead>
@@ -104,7 +106,7 @@ export function ClaimantPanel({
               {state.notes.map((note, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="amount">
                     <code>{note.amount?.toString() ?? "?"}</code>
                   </td>
                 </tr>
@@ -116,20 +118,24 @@ export function ClaimantPanel({
 
       {state.registered && (
         <div>
-          <h3>Withdraw</h3>
-          <input
-            type="text"
-            value={withdrawAmount}
-            onChange={(event) => setWithdrawAmount(event.target.value)}
-            placeholder="Amount"
-            style={{ width: "200px", marginRight: "8px" }}
-          />
-          <button
-            onClick={() => withdraw(BigInt(withdrawAmount))}
-            disabled={!canWithdraw}
-          >
-            {state.withdrawing ? "Withdrawing..." : "Withdraw"}
-          </button>
+          <h3 className="neon-subheading">Withdraw</h3>
+          <div className="neon-row-flex">
+            <input
+              className="neon-input"
+              type="text"
+              value={withdrawAmount}
+              onChange={(event) => setWithdrawAmount(event.target.value)}
+              placeholder="Amount"
+              style={{ maxWidth: "240px" }}
+            />
+            <button
+              className="neon-btn neon-btn-lime"
+              onClick={() => withdraw(BigInt(withdrawAmount))}
+              disabled={!canWithdraw}
+            >
+              {state.withdrawing ? "Withdrawing..." : "Withdraw"}
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -30,16 +30,17 @@ export function App() {
   const [mode, setMode] = useState<"send" | "claim">("claim");
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px", fontFamily: "monospace" }}>
-      <h1>Anonymous Airdrop</h1>
-      <p>
-        Chain: <code>{formatChainId(config.chainId)}</code> | Pool:{" "}
+    <div className="neon-app">
+      <h1 className="neon-title">Anonymous Airdrop</h1>
+      <p className="neon-subtitle">
+        Chain: <code>{formatChainId(config.chainId)}</code> &middot; Pool:{" "}
         <code>{truncateAddress(config.poolAddress)}</code>
       </p>
 
-      <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-        <label>Account: </label>
+      <div className="neon-account-bar">
+        <label>Account</label>
         <select
+          className="neon-select"
           value={activeIndex}
           onChange={(event) => setActiveIndex(Number(event.target.value))}
         >
@@ -51,40 +52,26 @@ export function App() {
         </select>
         {activeAccount && (
           <button
+            className="neon-btn neon-btn-sm neon-btn-copy"
             onClick={() => navigator.clipboard.writeText(activeAccount.address)}
             title="Copy full address"
-            style={{ cursor: "pointer", fontSize: "0.8em", padding: "2px 6px" }}
           >
-            Copy Address
+            Copy
           </button>
         )}
       </div>
 
       {activeAccount && hasValidViewingKey && (
-        <div style={{ marginBottom: "16px", display: "flex", gap: "8px" }}>
+        <div className="neon-mode-toggle">
           <button
+            className={`neon-mode-btn ${mode === "send" ? "active-send" : ""}`}
             onClick={() => setMode("send")}
-            style={{
-              padding: "6px 16px",
-              fontWeight: mode === "send" ? "bold" : "normal",
-              background: mode === "send" ? "#333" : "#eee",
-              color: mode === "send" ? "#fff" : "#333",
-              border: "1px solid #333",
-              cursor: "pointer",
-            }}
           >
             Send Airdrop
           </button>
           <button
+            className={`neon-mode-btn ${mode === "claim" ? "active-claim" : ""}`}
             onClick={() => setMode("claim")}
-            style={{
-              padding: "6px 16px",
-              fontWeight: mode === "claim" ? "bold" : "normal",
-              background: mode === "claim" ? "#333" : "#eee",
-              color: mode === "claim" ? "#fff" : "#333",
-              border: "1px solid #333",
-              cursor: "pointer",
-            }}
           >
             Claim Airdrop
           </button>
@@ -92,39 +79,43 @@ export function App() {
       )}
 
       {activeAccount && !hasValidViewingKey && (
-        <p style={{ color: "#c00" }}>
+        <div className="neon-alert neon-alert-error">
           This account has viewing key 0x0 — it cannot interact with the privacy pool.
-        </p>
+        </div>
       )}
 
       {activeAccount && transfers && (
-        mode === "send" ? (
-          <AdminPanel
-            provider={provider}
-            transfers={transfers}
-            adminAddress={activeAccount.address}
-            poolAddress={config.poolAddress}
-            config={config}
-            accounts={accounts}
-            initialRecipients={initialRecipients}
-          />
-        ) : (
-          <ClaimantPanel
-            provider={provider}
-            transfers={transfers}
-            activeAddress={activeAccount.address}
-            poolAddress={config.poolAddress}
-            config={config}
-            accounts={accounts}
-          />
-        )
+        <div className="neon-fade-in" key={`${activeAccount.address}-${mode}`}>
+          {mode === "send" ? (
+            <AdminPanel
+              provider={provider}
+              transfers={transfers}
+              adminAddress={activeAccount.address}
+              poolAddress={config.poolAddress}
+              config={config}
+              accounts={accounts}
+              initialRecipients={initialRecipients}
+            />
+          ) : (
+            <ClaimantPanel
+              provider={provider}
+              transfers={transfers}
+              activeAddress={activeAccount.address}
+              poolAddress={config.poolAddress}
+              config={config}
+              accounts={accounts}
+            />
+          )}
+        </div>
       )}
 
       {!activeAccount && (
-        <p>No accounts loaded. Add accounts via URL parameter or localStorage.</p>
+        <div className="neon-empty-state">
+          No accounts loaded. Add accounts via URL parameter or localStorage.
+        </div>
       )}
 
-      <footer style={{ marginTop: "40px", fontSize: "0.8em", color: "#888" }}>
+      <footer className="neon-footer">
         Anonymous Airdrop — Built with Starknet Privacy SDK
       </footer>
     </div>

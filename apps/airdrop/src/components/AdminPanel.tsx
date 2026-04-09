@@ -66,12 +66,10 @@ export function AdminPanel({
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        // discoverRequirement throws if the SENDER is not registered
         if (message.toLowerCase().includes("not registered") || message.toLowerCase().includes("viewing key")) {
           setSenderNotRegistered(true);
           break;
         }
-        // Other errors — skip this recipient, don't assume unregistered
       }
     }
     setUnregisteredRecipients(unregistered);
@@ -96,13 +94,22 @@ export function AdminPanel({
 
   return (
     <div>
-      <h2>Admin: Airdrop</h2>
-      <p>
-        Token: <code>{config.tokenAddress}</code>
-      </p>
-      <p>
-        Balance: <code>{adminBalance !== null ? adminBalance.toString() : "loading..."}</code>
-      </p>
+      <h2 className="neon-heading">Send Airdrop</h2>
+
+      <div className="neon-panel neon-panel-info">
+        <div className="neon-row-flex" style={{ gap: "24px" }}>
+          <div>
+            <div className="label">Token</div>
+            <div className="value">{truncateAddress(config.tokenAddress)}</div>
+          </div>
+          <div>
+            <div className="label">Balance</div>
+            <div className={`value ${adminBalance === null ? "loading" : ""}`}>
+              {adminBalance !== null ? adminBalance.toString() : "loading..."}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {airdropPhase.phase === "idle" ? (
         <>
@@ -112,18 +119,19 @@ export function AdminPanel({
             disabled={false}
             adminBalance={adminBalance}
           />
+
           {checkingRegistration && (
-            <p style={{ marginTop: "8px" }}>Checking registrations...</p>
+            <p style={{ color: "var(--text-dim)", fontSize: "0.85rem" }}>Checking registrations...</p>
           )}
 
           {senderNotRegistered && (
-            <div style={{ marginTop: "8px", padding: "12px", background: "#f8d7da", border: "1px solid #f5c6cb", borderRadius: "4px" }}>
+            <div className="neon-alert neon-alert-error">
               <strong>You are not registered.</strong> Switch to the Claim Airdrop view and register your viewing key in the pool before sending airdrops.
             </div>
           )}
 
           {unregisteredRecipients.length > 0 && (
-            <div style={{ marginTop: "8px", padding: "12px", background: "#fff3cd", border: "1px solid #ffc107", borderRadius: "4px" }}>
+            <div className="neon-alert neon-alert-warning">
               <strong>Unregistered recipients:</strong> These addresses must register in the pool before they can receive private tokens.
               <ul style={{ margin: "8px 0 0 0", paddingLeft: "20px" }}>
                 {unregisteredRecipients.map((address) => (
@@ -133,13 +141,15 @@ export function AdminPanel({
             </div>
           )}
 
-          <button
-            onClick={handleExecute}
-            disabled={!canExecute}
-            style={{ marginTop: "12px", padding: "8px 24px", fontSize: "1em" }}
-          >
-            Execute Airdrop
-          </button>
+          <div style={{ marginTop: "16px" }}>
+            <button
+              className="neon-btn neon-btn-primary"
+              onClick={handleExecute}
+              disabled={!canExecute}
+            >
+              Execute Airdrop
+            </button>
+          </div>
         </>
       ) : (
         <>
