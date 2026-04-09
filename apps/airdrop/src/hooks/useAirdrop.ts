@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { Account, TransactionFinalityStatus, type RpcProvider } from "starknet";
-import type { PrivateTransfersInterface } from "starknet-sdk";
+import { SetupRequirement, type PrivateTransfersInterface } from "starknet-sdk";
 import type { AppConfig } from "../config.ts";
 
 const WAIT_OPTIONS = {
@@ -170,24 +170,46 @@ export function useAirdrop(
 
         if (cancelledRef.current) return;
 
-        // Step 4: Smart batch transfer
+        // Step 4: Batch transfer with explicit channel management
         let batchSucceeded = false;
         setPhase({ phase: "transferring", mode: "batch", progress: 0 });
-
-        // Pre-discover to populate registry with existing channels and notes
-        await transfers.discoverNotes({ tokens: [BigInt(config.tokenAddress)] });
-        await transfers.discoverChannels("all");
 
         try {
           setRecipients((prev) => prev.map((r) => ({ ...r, status: "proving" as const })));
 
+          // Check each recipient's setup requirement to determine what channels need opening.
+          // This avoids autoSetup re-opening channels that already exist on-chain.
+          const recipientRequirements = new Map<string, import("starknet-sdk").SetupRequirement>();
+          for (const { address } of entries) {
+            try {
+              const requirement = await transfers.discoverRequirement(address, BigInt(config.tokenAddress));
+              recipientRequirements.set(address, requirement);
+            } catch {
+              // If discoverRequirement throws, the sender may not be registered or
+              // there's an RPC error. Default to needing full setup.
+              recipientRequirements.set(address, SetupRequirement.SetupChannel);
+            }
+          }
+
           const provingBlockId = (await provider.getBlockNumber()) - 10;
           const builder = transfers.build({
-            autoSetup: true,
             autoDiscover: { notes: "refresh" },
             autoSelectNotes: "all",
           });
           builder.surplusTo(adminAddress);
+
+          // Manually add only the setup actions that are actually needed
+          for (const { address } of entries) {
+            const requirement = recipientRequirements.get(address);
+            if (requirement === SetupRequirement.SetupChannel) {
+              builder.setup(address);
+              builder.with(config.tokenAddress, (t) => t.setup(address));
+            } else if (requirement === SetupRequirement.SetupToken) {
+              builder.with(config.tokenAddress, (t) => t.setup(address));
+            }
+          }
+
+          // Add all transfers
           builder.with(config.tokenAddress, (t) => {
             for (const { address, amount } of entries) {
               t.transfer({ recipient: address, amount });
@@ -218,8 +240,9 @@ export function useAirdrop(
           setRecipients((prev) => prev.map((r) => ({ ...r, status: "done" as const })));
           batchSucceeded = true;
         } catch (batchError) {
-          console.warn("Batch transfer failed, falling back to individual transfers:", batchError);
-          setRecipients((prev) => prev.map((r) => ({ ...r, status: "pending" as const })));
+          const batchMsg = batchError instanceof Error ? batchError.message : String(batchError);
+          console.warn("Batch transfer failed, falling back to individual transfers:", batchMsg);
+          setRecipients((prev) => prev.map((r) => ({ ...r, status: "pending" as const, error: `Batch failed: ${batchMsg.slice(0, 120)}` })));
         }
 
         // Fallback: individual transfers
