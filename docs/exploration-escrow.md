@@ -114,16 +114,71 @@ Bob discovers and withdraws normally
 
 **Privacy impact:** Full. Uses the standard private transfer flow — no escrow, no public holdings. The only observable event is the transfer happening shortly after Bob registers (timing correlation).
 
+### Option D: Pool-Level Escrow (Committed Notes)
+
+Instead of a separate escrow contract, the commitment scheme lives inside the privacy pool itself. This eliminates the external contract fingerprint and makes claims indistinguishable from normal pool operations.
+
+1. Alice deposits into the pool and creates a **committed note** tied to `hash(secret)` — no recipient address stored
+2. Alice shares the secret off-chain (link, QR code, messaging app)
+3. When Bob registers, he presents the secret to the pool directly
+4. The pool verifies the hash, creates an encrypted note in Bob's channel — looks like any other pool operation
+
+**Flow:**
+```
+Alice → Pool.create_committed_note(amount, hash(secret))
+         Pool stores: { commitment: hash(secret), note_id, amount }
+         No recipient address anywhere on-chain
+Alice sends secret to Bob off-chain (link, QR, etc.)
+                              ... time passes ...
+Bob registers in pool
+Bob → Pool.claim_committed_note(secret)
+       Pool verifies hash(secret) matches stored commitment
+       Pool creates encrypted note in Bob's channel
+       (internal state transition — no external contract call)
+```
+
+**What observers see:**
+- Alice made a deposit (normal pool activity)
+- Bob interacted with the pool (normal pool activity)
+- No escrow contract interaction, no visible link between the two
+
+**Pros:**
+- Highest privacy — Bob's claim blends into the pool's anonymity set (deposits, transfers, withdrawals all look the same)
+- No external contract call (`InvokeExternal`) needed — everything is internal state
+- No separate escrow contract to deploy, register, or audit
+- Forwardable — secret-based, not address-based
+
+**Cons:**
+- Requires modifying the core pool contract (new actions: `CreateCommittedNote`, `ClaimCommittedNote`)
+- Higher audit surface — changes to the pool affect all users
+- Pool upgrades must account for committed note state
+- Same secret interception risk as Option B
+
+**Privacy impact:** Highest. No external contract fingerprint. Claims are indistinguishable from normal pool operations. Sender-recipient link is never visible on-chain.
+
+## Why This Is Needed
+
+The current privacy pool requires both sender and recipient to be registered before any private transfer can happen. The sender's SDK needs the recipient's public viewing key (set during registration) to encrypt the channel and notes. Without it, the transfer simply fails.
+
+This is a fundamental UX blocker: **you cannot send tokens to someone who hasn't joined the pool yet.** In practice, this means:
+
+- Airdrops require all recipients to register first, defeating the purpose of surprise distributions
+- Onboarding new users requires awkward coordination ("register first, then I'll send you tokens")
+- Payment links, gift cards, and "send to anyone" flows are impossible
+- The pool can only serve users who are already in it, limiting organic growth
+
+The escrow mechanism solves this by decoupling the send from the receive. The sender locks funds now, and the recipient claims them whenever they register — without the sender needing to stay online or coordinate timing. This is the primitive that turns the privacy pool from a closed system (only existing members can transact) into an open one (anyone can receive, registration happens on their own schedule).
+
 ## Comparison
 
-| | Option A | Option B | Option C |
-|---|---|---|---|
-| Privacy | Low | High | Full |
-| Complexity | Medium | High | Low |
-| New contracts | Yes (escrow) | Yes (escrow + commitments) | No |
-| Alice online? | No | No | Yes (or backend) |
-| Forwardable | No (locked to address) | Yes (secret-based) | No |
-| Best for | Non-sensitive distributions | High-privacy deferred delivery | Quick integration into existing apps |
+| | Option A | Option B | Option C | Option D |
+|---|---|---|---|---|
+| Privacy | Low | High | Full | Highest |
+| Complexity | Medium | High | Low | High |
+| New contracts | Yes (escrow) | Yes (escrow + commitments) | No | No (pool modification) |
+| Alice online? | No | No | Yes (or backend) | No |
+| Forwardable | No (locked to address) | Yes (secret-based) | No | Yes (secret-based) |
+| Best for | Non-sensitive distributions | High-privacy deferred delivery | Quick integration into existing apps | Production-grade privacy with no external fingerprint |
 
 ## Recommendation
 
