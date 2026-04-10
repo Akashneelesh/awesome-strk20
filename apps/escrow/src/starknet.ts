@@ -1,12 +1,17 @@
-import { Account, RpcProvider } from "starknet";
+import { Account, RpcProvider, TransactionFinalityStatus } from "starknet";
 import {
   createPrivateTransfers,
+  IndexerDiscoveryProvider,
   ProvingServiceProofProvider,
+  type CallAndProof,
   type PrivateTransfersInterface,
 } from "starknet-sdk";
-// @ts-expect-error — deep import into dist, not part of the declared exports
-import { IndexerDiscoveryProvider } from "starknet-sdk/dist/internal/indexer-discovery.js";
 import type { AppConfig, AccountConfig } from "./config.ts";
+
+const WAIT_OPTIONS = {
+  successStates: [TransactionFinalityStatus.PRE_CONFIRMED],
+  retryInterval: 100,
+};
 
 class NoValidateProofProvider {
   constructor(
@@ -57,6 +62,26 @@ export function createTransfers(
     discoveryProvider: discovery,
     poolContractAddress: poolAddress,
   });
+}
+
+export async function submitPrivateTransaction(
+  account: Account,
+  provider: RpcProvider,
+  callAndProof: CallAndProof,
+): Promise<string> {
+  const proofDetails = callAndProof.proof.proofFacts?.length
+    ? { proofFacts: callAndProof.proof.proofFacts, proof: callAndProof.proof.data }
+    : {};
+
+  const tx = await account.execute(callAndProof.call, {
+    tip: 0n,
+    ...proofDetails,
+  });
+  const receipt = await provider.waitForTransaction(tx.transaction_hash, WAIT_OPTIONS);
+  if (!receipt.isSuccess()) {
+    throw new Error(`Transaction reverted: ${JSON.stringify(receipt)}`);
+  }
+  return tx.transaction_hash;
 }
 
 export async function getErc20Balance(

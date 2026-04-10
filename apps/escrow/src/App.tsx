@@ -32,7 +32,11 @@ function CopyableAddress({ label, address }: { label: string; address: string })
 }
 
 export function App() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(() =>
+    accounts.findIndex((a) => a.name === "Alice") >= 0
+      ? accounts.findIndex((a) => a.name === "Alice")
+      : 0
+  );
   const [mode, setMode] = useState<"deposit" | "claim">("claim");
 
   const activeAccount = accounts[activeIndex];
@@ -53,7 +57,7 @@ export function App() {
 
   return (
     <div className="app">
-      <h1>Privacy Escrow</h1>
+      <h1>Private Escrow</h1>
       <div className="address-bar">
         <CopyableAddress label="Pool" address={config.poolAddress} />
         <CopyableAddress label="Escrow" address={config.escrowAddress} />
@@ -145,7 +149,7 @@ export function App() {
       )}
 
       <footer className="footer">
-        Privacy Escrow — Deferred delivery for unregistered recipients
+        Private Escrow — Deferred delivery for unregistered recipients
       </footer>
     </div>
   );

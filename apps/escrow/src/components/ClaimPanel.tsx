@@ -7,7 +7,7 @@ import {
   parseEscrowSecret,
   type PrivateTransfersInterface,
 } from "starknet-sdk";
-import { submitPrivateTransaction } from "../starknet.ts";
+import { getErc20Balance, submitPrivateTransaction } from "../starknet.ts";
 import type { AppConfig } from "../config.ts";
 
 type Props = {
@@ -34,6 +34,37 @@ export function ClaimPanel({ account, provider, transfers, activeAddress, config
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState("");
   const [commitmentInfo, setCommitmentInfo] = useState<CommitmentInfo | null>(null);
+  const [publicBalance, setPublicBalance] = useState<bigint | null>(null);
+  const [privateBalance, setPrivateBalance] = useState<bigint | null>(null);
+  const [noteCount, setNoteCount] = useState<number | null>(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+
+  async function refreshBalances() {
+    setBalanceLoading(true);
+    try {
+      const pub = await getErc20Balance(provider, config.tokenAddress, activeAddress);
+      setPublicBalance(pub);
+
+      const discovered = await transfers.discoverNotes({
+        tokens: [BigInt(config.tokenAddress)],
+      });
+      const notes = discovered.notes.get(BigInt(config.tokenAddress)) ?? [];
+      const total = notes.reduce((sum, note) => sum + note.amount, 0n);
+      setPrivateBalance(total);
+      setNoteCount(notes.length);
+    } catch {
+      // Silently ignore — new accounts may not have notes yet
+      setPrivateBalance(0n);
+      setNoteCount(0);
+    } finally {
+      setBalanceLoading(false);
+    }
+  }
+
+  // Auto-refresh balances on mount and when account changes
+  useEffect(() => {
+    refreshBalances();
+  }, [activeAddress]);
 
   // Auto-detect secret from URL on mount.
   useEffect(() => {
@@ -123,6 +154,8 @@ export function ClaimPanel({ account, provider, transfers, activeAddress, config
 
       setStatus("Claim successful. The escrowed amount is now available in your private pool balance.");
       setCommitmentInfo({ ...commitmentInfo, claimed: true });
+
+      await refreshBalances();
     } catch (error) {
       setStatus(`Claim error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
@@ -138,6 +171,35 @@ export function ClaimPanel({ account, provider, transfers, activeAddress, config
         If you're not registered in the pool, the claim will register you
         automatically.
       </p>
+
+      <div className="field-group">
+        <label>Balances</label>
+        <div className="balance-row">
+          <button
+            className="btn btn-sm"
+            onClick={refreshBalances}
+            disabled={balanceLoading}
+          >
+            {balanceLoading ? "Loading..." : "Refresh Balances"}
+          </button>
+        </div>
+        <table className="balance-table">
+          <tbody>
+            <tr>
+              <td>Public (ERC20)</td>
+              <td>{publicBalance !== null ? publicBalance.toString() : "—"}</td>
+            </tr>
+            <tr>
+              <td>Private (Pool)</td>
+              <td>
+                {privateBalance !== null
+                  ? `${privateBalance.toString()} (${noteCount} note${noteCount !== 1 ? "s" : ""})`
+                  : "—"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <div className="field-group">
         <label>Secret (hex)</label>

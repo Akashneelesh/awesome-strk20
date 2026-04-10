@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Account, type RpcProvider } from "starknet";
 import {
   buildClaimUrl,
@@ -50,6 +50,11 @@ export function DepositPanel({ account, provider, transfers, activeAddress, conf
       setBalanceLoading(false);
     }
   }
+
+  // Auto-refresh balances on mount and when account changes
+  useEffect(() => {
+    refreshBalances();
+  }, [activeAddress]);
 
   async function handleDeposit() {
     if (!amount || BigInt(amount) === 0n) {
