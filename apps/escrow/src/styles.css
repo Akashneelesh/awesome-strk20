@@ -310,6 +310,45 @@ h1 {
   color: var(--text-muted);
 }
 
+.address-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+}
+
+.copyable-addr {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+}
+
+.copyable-addr code {
+  background: var(--surface);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.78rem;
+}
+
+.copy-btn {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
 .footer {
   text-align: center;
   margin-top: 2rem;

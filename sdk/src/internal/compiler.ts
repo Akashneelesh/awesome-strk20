@@ -388,6 +388,17 @@ export class ActionCompiler {
     }
 
     // 6. CreateEncNote/CreateOpenNote
+    // Resolve the depositor for open notes from the invoke action (if present).
+    const openNoteDepositor: bigint = actions.invoke
+      ? toBigInt(
+          actions.invoke.callBuilder({
+            openNotes: [{ noteId: 0n, token: 0n }],
+            withdrawals: [],
+            poolAddress: this.poolAddress,
+          }).contractAddress
+        )
+      : 0n;
+
     if (actions.createNotes) {
       for (const action of actions.createNotes) {
         const channel = transformOpenSubchannel(
@@ -406,6 +417,7 @@ export class ActionCompiler {
               recipient_public_key: channel.publicKey as bigint,
               token: action.token,
               index: channel.tokens.get(action.token)!.noteNonce,
+              depositor: openNoteDepositor,
               random: generateRandom(),
             },
           } as const; // typescipt magic

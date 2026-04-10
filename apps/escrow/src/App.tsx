@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { ESCROW_HELPER_PRIVACY_WARNING } from "starknet-sdk";
 import { loadConfig, loadAccounts } from "./config.ts";
 import { createProvider, createAccount, createTransfers } from "./starknet.ts";
 import { DepositPanel } from "./components/DepositPanel.tsx";
@@ -9,6 +10,25 @@ const accounts = loadAccounts();
 
 function truncateAddress(address: string): string {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+function CopyableAddress({ label, address }: { label: string; address: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <span className="copyable-addr" title={address}>
+      {label}: <code>{truncateAddress(address)}</code>
+      <button
+        className="copy-btn"
+        onClick={() => {
+          navigator.clipboard.writeText(address);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }}
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
+    </span>
+  );
 }
 
 export function App() {
@@ -34,10 +54,12 @@ export function App() {
   return (
     <div className="app">
       <h1>Privacy Escrow</h1>
-      <p className="subtitle">
-        Pool: <code>{truncateAddress(config.poolAddress)}</code> &middot; Escrow:{" "}
-        <code>{truncateAddress(config.escrowAddress)}</code>
-      </p>
+      <div className="address-bar">
+        <CopyableAddress label="Pool" address={config.poolAddress} />
+        <CopyableAddress label="Escrow" address={config.escrowAddress} />
+        <CopyableAddress label="Token" address={config.tokenAddress} />
+      </div>
+      <div className="alert">{ESCROW_HELPER_PRIVACY_WARNING}</div>
 
       <div className="account-bar">
         <label>Account</label>
@@ -51,6 +73,21 @@ export function App() {
             </option>
           ))}
         </select>
+        {activeAccount && (
+          <button
+            className="copy-btn"
+            onClick={() => navigator.clipboard.writeText(activeAccount.address)}
+            title={activeAccount.address}
+          >
+            Copy Address
+          </button>
+        )}
+      </div>
+
+      <div className="address-bar">
+        {accounts.map((acc) => (
+          <CopyableAddress key={acc.address} label={acc.name} address={acc.address} />
+        ))}
       </div>
 
       <div className="mode-toggle">
@@ -76,6 +113,7 @@ export function App() {
 
       {activeAccount && account && transfers && mode === "deposit" && (
         <DepositPanel
+          account={account}
           provider={provider}
           transfers={transfers}
           activeAddress={activeAccount.address}
@@ -96,8 +134,9 @@ export function App() {
         </div>
       )}
 
-      {activeAccount && transfers && mode === "claim" && (
+      {activeAccount && account && transfers && mode === "claim" && (
         <ClaimPanel
+          account={account}
           provider={provider}
           transfers={transfers}
           activeAddress={activeAccount.address}

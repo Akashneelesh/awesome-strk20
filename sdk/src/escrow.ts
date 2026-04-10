@@ -2,13 +2,16 @@
  * Escrow utilities for privacy-preserving deferred delivery.
  *
  * Both deposit and claim go through the privacy pool via `privacy_invoke`,
- * so neither Alice nor Bob's address is exposed to the escrow contract.
+ * so the helper contract never needs Bob's address at deposit time.
  *
  * Alice deposits by: using a note, withdrawing tokens to the escrow address,
  * then invoking with the Deposit operation.
  *
  * Bob claims by: creating an open note, then invoking with the Claim operation
  * and the secret Alice shared off-chain.
+ *
+ * Privacy note: this helper-contract design removes the direct sender→recipient
+ * dependency, but helper usage is still distinguishable from pool-native flows.
  */
 
 import type { BigNumberish, CallDetails } from "starknet";
@@ -17,6 +20,10 @@ import type { InvokeCalldataBuilderArgs } from "./interfaces.js";
 
 /** Domain-separation tag matching the Cairo contract's ESCROW_COMMITMENT_TAG. */
 const ESCROW_COMMITMENT_TAG = "ESCROW_COMMITMENT_TAG:V1";
+
+/** User-facing warning for the helper-contract escrow design. */
+export const ESCROW_HELPER_PRIVACY_WARNING =
+  "Escrow helper flows hide the recipient at send time, but escrow usage itself remains distinguishable from pool-native activity.";
 
 /**
  * Compute the commitment hash from a secret, matching the Cairo contract's
@@ -118,6 +125,24 @@ export function parseClaimUrl(url: string): bigint | null {
     const secretHex = parsed.searchParams.get("secret");
     if (!secretHex) return null;
     return BigInt(`0x${secretHex}`);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Parse either a full claim URL or a raw secret hex string.
+ */
+export function parseEscrowSecret(input: string): bigint | null {
+  const fromUrl = parseClaimUrl(input);
+  if (fromUrl !== null) return fromUrl;
+
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  try {
+    const normalized = trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`;
+    return BigInt(normalized);
   } catch {
     return null;
   }

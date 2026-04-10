@@ -1,25 +1,28 @@
 import { useState } from "react";
-import type { RpcProvider } from "starknet";
+import { Account, type RpcProvider } from "starknet";
 import {
+  buildClaimUrl,
   generateEscrowSecret,
   computeCommitmentHash,
   buildDepositInvoke,
   type PrivateTransfersInterface,
 } from "starknet-sdk";
-import { getErc20Balance } from "../starknet.ts";
+import { getErc20Balance, submitPrivateTransaction } from "../starknet.ts";
 import type { AppConfig } from "../config.ts";
 
 type Props = {
+  account: Account;
   provider: RpcProvider;
   transfers: PrivateTransfersInterface;
   activeAddress: string;
   config: AppConfig;
 };
 
-export function DepositPanel({ provider, transfers, activeAddress, config }: Props) {
+export function DepositPanel({ account, provider, transfers, activeAddress, config }: Props) {
   const [amount, setAmount] = useState("");
   const [status, setStatus] = useState("");
   const [claimLink, setClaimLink] = useState("");
+  const [txHash, setTxHash] = useState("");
   const [loading, setLoading] = useState(false);
   const [publicBalance, setPublicBalance] = useState<bigint | null>(null);
   const [privateBalance, setPrivateBalance] = useState<bigint | null>(null);
@@ -67,7 +70,7 @@ export function DepositPanel({ provider, transfers, activeAddress, config }: Pro
         .build({
           autoSetup: true,
           autoDiscover: { notes: "refresh", channels: "refresh" },
-          autoSelectNotes: true,
+          autoSelectNotes: "naive",
         })
         .surplusTo(activeAddress)
         .with(config.tokenAddress, (t) =>
@@ -81,23 +84,23 @@ export function DepositPanel({ provider, transfers, activeAddress, config }: Pro
             depositAmount,
           ),
         )
-        .execute();
+        .execute({ provingBlockId: (await provider.getBlockNumber()) - 10 });
 
       if (!result.callAndProof) {
         setStatus("Failed to build deposit transaction — no callAndProof returned.");
-        setLoading(false);
         return;
       }
 
       setStatus("Submitting deposit transaction...");
-      const executeResult = await (
-        transfers as never as { account: { execute: Function } }
-      ).account.execute([result.callAndProof.call]);
-      await provider.waitForTransaction(executeResult.transaction_hash);
+      const depositTxHash = await submitPrivateTransaction(account, provider, result.callAndProof);
+      setTxHash(depositTxHash);
 
-      const link = `${window.location.origin}${window.location.pathname}?secret=${secret.toString(16)}`;
+      const link = buildClaimUrl(
+        `${window.location.origin}${window.location.pathname}`,
+        secret,
+      );
       setClaimLink(link);
-      setStatus("Deposit confirmed! Share the claim link with the recipient.");
+      setStatus("Deposit confirmed. Share the claim link so the recipient can claim into a private pool note.");
 
       // Refresh balances after deposit
       await refreshBalances();
@@ -178,6 +181,29 @@ export function DepositPanel({ provider, transfers, activeAddress, config }: Pro
             >
               Copy
             </button>
+          </div>
+        </div>
+      )}
+
+      {txHash && (
+        <div className="result-box">
+          <label>Transaction Hash</label>
+          <div className="link-row">
+            <input type="text" value={txHash} readOnly />
+            <button
+              className="btn btn-sm"
+              onClick={() => navigator.clipboard.writeText(txHash)}
+            >
+              Copy
+            </button>
+            <a
+              className="btn btn-sm"
+              href={`https://sepolia.voyager.online/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </a>
           </div>
         </div>
       )}

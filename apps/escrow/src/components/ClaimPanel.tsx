@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import type { RpcProvider } from "starknet";
+import { Account, type RpcProvider } from "starknet";
 import {
+  Open,
   computeCommitmentHash,
   buildClaimInvoke,
-  parseClaimUrl,
+  parseEscrowSecret,
   type PrivateTransfersInterface,
 } from "starknet-sdk";
-// Import Open from the SDK's dist directly to ensure symbol identity matches
-// the one used internally by the SDK's builder code.
-// @ts-expect-error — deep import into dist
-import { Open } from "starknet-sdk/dist/interfaces.js";
+import { submitPrivateTransaction } from "../starknet.ts";
 import type { AppConfig } from "../config.ts";
 
 type Props = {
+  account: Account;
   provider: RpcProvider;
   transfers: PrivateTransfersInterface;
   activeAddress: string;
@@ -25,15 +24,20 @@ type CommitmentInfo = {
   claimed: boolean;
 };
 
-export function ClaimPanel({ provider, transfers, activeAddress, config }: Props) {
+function parseSecretInput(input: string): bigint | null {
+  return parseEscrowSecret(input);
+}
+
+export function ClaimPanel({ account, provider, transfers, activeAddress, config }: Props) {
   const [secretInput, setSecretInput] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [txHash, setTxHash] = useState("");
   const [commitmentInfo, setCommitmentInfo] = useState<CommitmentInfo | null>(null);
 
   // Auto-detect secret from URL on mount.
   useEffect(() => {
-    const secret = parseClaimUrl(window.location.href);
+    const secret = parseSecretInput(window.location.href);
     if (secret) {
       setSecretInput(secret.toString(16));
       setStatus("Secret detected from URL.");
@@ -47,7 +51,11 @@ export function ClaimPanel({ provider, transfers, activeAddress, config }: Props
     }
 
     try {
-      const secret = BigInt(`0x${secretInput.replace(/^0x/, "")}`);
+      const secret = parseSecretInput(secretInput);
+      if (secret === null) {
+        setStatus("Enter a valid secret hex string or full claim link.");
+        return;
+      }
       const commitmentHash = computeCommitmentHash(secret);
 
       setStatus("Looking up commitment on-chain...");
@@ -84,7 +92,11 @@ export function ClaimPanel({ provider, transfers, activeAddress, config }: Props
 
     setLoading(true);
     try {
-      const secret = BigInt(`0x${secretInput.replace(/^0x/, "")}`);
+      const secret = parseSecretInput(secretInput);
+      if (secret === null) {
+        setStatus("Enter a valid secret hex string or full claim link.");
+        return;
+      }
 
       setStatus("Building claim transaction (register + setup + claim)...");
 
@@ -98,24 +110,18 @@ export function ClaimPanel({ provider, transfers, activeAddress, config }: Props
         .transfer({ recipient: activeAddress, amount: Open as never })
         .done()
         .invoke(buildClaimInvoke(config.escrowAddress, secret))
-        .execute();
+        .execute({ provingBlockId: (await provider.getBlockNumber()) - 10 });
 
       if (!result.callAndProof) {
         setStatus("Failed to build claim transaction.");
-        setLoading(false);
         return;
       }
 
       setStatus("Submitting claim transaction...");
-      const executeResult = await provider.waitForTransaction(
-        (
-          await (transfers as never as { account: { execute: Function } }).account.execute([
-            result.callAndProof.call,
-          ])
-        ).transaction_hash,
-      );
+      const claimTxHash = await submitPrivateTransaction(account, provider, result.callAndProof);
+      setTxHash(claimTxHash);
 
-      setStatus(`Claim successful! Transaction confirmed.`);
+      setStatus("Claim successful. The escrowed amount is now available in your private pool balance.");
       setCommitmentInfo({ ...commitmentInfo, claimed: true });
     } catch (error) {
       setStatus(`Claim error: ${error instanceof Error ? error.message : String(error)}`);
@@ -171,6 +177,29 @@ export function ClaimPanel({ provider, transfers, activeAddress, config }: Props
           <div>
             <strong>Status:</strong>{" "}
             {commitmentInfo.claimed ? "Claimed" : "Available"}
+          </div>
+        </div>
+      )}
+
+      {txHash && (
+        <div className="result-box">
+          <label>Transaction Hash</label>
+          <div className="link-row">
+            <input type="text" value={txHash} readOnly />
+            <button
+              className="btn btn-sm"
+              onClick={() => navigator.clipboard.writeText(txHash)}
+            >
+              Copy
+            </button>
+            <a
+              className="btn btn-sm"
+              href={`https://sepolia.voyager.online/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </a>
           </div>
         </div>
       )}
