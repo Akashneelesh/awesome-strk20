@@ -58,9 +58,12 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 
 - [Private Airdrop](./pocs/private-airdrop) — Distribute ERC-20 tokens privately: the sender deposits into the pool, transfers privately to a recipient list, and recipients discover and withdraw. The sender→recipient link is cryptographically hidden on-chain.
 - [Private Escrow](./pocs/private-escrow) — Deferred token delivery to unregistered recipients. A sender deposits against a secret commitment hash through the pool; the recipient claims later with the shared secret, even if they weren't registered at deposit time. Pairs with the [escrow helper contract](./pocs/escrow-helper).
+- [Polymarket Privacy](https://github.com/starkware-libs/polymarket-privacy) — Private swaps on Polymarket: USDC routes through the privacy pool and Circle CCTP via an anonymizer contract so the Polygon account that trades is unlinkable to the user's Starknet identity.
+- [Private Payroll](https://github.com/starkware-industries/private-payroll) — Batch private salary payments through the pool, so recipients and amounts stay confidential.
+- [Private KYC](https://github.com/starkware-industries/private-kyc) — Privacy-preserving KYC / selective disclosure on top of the pool.
 
 > [!NOTE]
-> The PoCs depend on components that are not yet publicly released — the apps reference the Privacy SDK via `file:../../sdk`, and the escrow helper depends on the `privacy` Cairo library. They are provided as **reference implementations** to read and learn from. They will build and run once those dependencies are publicly available and wired in. Replace all placeholder values in each `.env.example` with your own; never commit real private keys.
+> Several of these PoCs depend on components that are not yet publicly released. The in-repo apps reference the Privacy SDK via `file:../../sdk`, and the escrow helper depends on the `privacy` Cairo library. Some linked repositories above (Polymarket Privacy, Private Payroll, Private KYC) are not yet public — the links will resolve once those repositories are opened. All are provided as **reference implementations** to read and learn from. Replace every placeholder in each `.env.example` with your own values; never commit real private keys.
 
 ## App Ideas to Build
 
