@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd ../../sdk && npm install && npm run build && cd ../../apps/airdrop && npm install && npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "echo 'skipping default install, handled in buildCommand'",
+  "rewrites": [
+    { "source": "/api/rpc/:path*", "destination": "https://YOUR_RPC_HOST/:path*" },
+    { "source": "/api/prover/:path*", "destination": "https://YOUR_PROVING_HOST/:path*" },
+    { "source": "/api/indexer/:path*", "destination": "https://YOUR_INDEXER_HOST/:path*" }
+  ]
+}

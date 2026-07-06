@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+target/
+
+# Environment — never commit real secrets
+.env
+.env.*
+!.env.example
+
+# Cairo / Starknet Foundry
+.snfoundry_cache/
+
+# Editor / OS
+.DS_Store
+*.log

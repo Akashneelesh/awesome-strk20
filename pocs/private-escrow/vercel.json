@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/api/rpc/:path*", "destination": "https://YOUR_RPC_HOST/rpc/:path*" },
+    { "source": "/api/prover", "destination": "https://YOUR_PROVING_HOST/" },
+    { "source": "/api/prover/:path*", "destination": "https://YOUR_PROVING_HOST/:path*" },
+    { "source": "/api/indexer", "destination": "https://YOUR_INDEXER_HOST/" },
+    { "source": "/api/indexer/:path*", "destination": "https://YOUR_INDEXER_HOST/:path*" }
+  ]
+}
