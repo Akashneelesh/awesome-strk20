@@ -67,14 +67,34 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 
 ## App Ideas to Build
 
-*Starting points for lightweight apps on the privacy pool, ordered roughly by complexity. Full sketches with SDK snippets live in [`ideas/app-ideas.md`](./ideas/app-ideas.md).*
+*The STRK[20] team's official [Request for Startups](https://strk20.starknet.io/rfp) — 12 problems worth building on the pool. Full write-ups (what you build, why it ships, hidden-vs-visible breakdowns) are mirrored in [`ideas/strk20-rfps.md`](./ideas/strk20-rfps.md).*
 
-- **Privacy Savings Vault** — Deposit and withdraw only: "hide my balance." The simplest possible integration.
-- **Private Tip Jar / Donation Box** — Visitors send private tokens to a recipient who periodically discovers and withdraws incoming notes.
-- **Private Payroll Splitter** — Batch many private transfers into a single transaction; recipients never see each other's amounts.
-- **Private Escrow** — Hold tokens against a secret until both parties confirm (see the PoC above).
-- **Anonymous Airdrop Claimer** — Recipients claim a private distribution without linking to the source (see the PoC above).
-- **Private Token Swap** — Route a swap through an anonymizer helper so the trader's address stays unlinked.
+**Markets & Trading**
+
+- [Private OTC Settlement](https://strk20.starknet.io/rfp/private-otc-settlement) — Trustless, atomic settlement for large block trades: no intermediary holds funds, neither party's identity is linked, at 5–15bps per side.
+- [Private Pump.fun](https://strk20.starknet.io/rfp/private-pumpfun) — Bonding-curve token launches with hidden buyers but fully visible price action; whales buy without triggering copy-trade cascades.
+- [Private Prediction Market](https://strk20.starknet.io/rfp/private-prediction-market) — Visible odds and bet sizes, invisible bettors; informational efficiency without the identity-based manipulation that plagues Polymarket.
+- [Sealed-Bid Auctions](https://strk20.starknet.io/rfp/sealed-bid-auctions) — Bids as encrypted notes, invisible even to the auctioneer until reveal. First-price, Vickrey, and multi-unit — actually-sealed, no commit-reveal griefing.
+
+**Payments & Money**
+
+- [Private Payroll](https://strk20.starknet.io/rfp/private-payroll) — Company-scale payroll and treasury disbursement: per-recipient amounts private, aggregate spend provable to auditors, income provable for taxes.
+- [Private Subscriptions](https://strk20.starknet.io/rfp/private-subscriptions) — Recurring gas-sponsored creator payments with subscriber identity hidden and tier-gated access via STARK proofs — the on-chain Patreon that works.
+
+**Social & Communications**
+
+- [Private Messaging](https://strk20.starknet.io/rfp/private-messaging) — Encrypted on-chain messaging over the pool: sender anonymity, encrypted payloads, persistent channels, no metadata and no protocol changes.
+- [Anonymous Whistleblower](https://strk20.starknet.io/rfp/anonymous-whistleblower) — Submit anonymous reports to registered orgs, then prove authorship for rewards or legal protection without revealing identity.
+
+**Gaming**
+
+- [Private Poker](https://strk20.starknet.io/rfp/private-poker) — Fully on-chain poker with cryptographically private hands, STARK-proven fair dealing, and betting settled through the pool. No server can peek at cards.
+- [Social Deduction Game](https://strk20.starknet.io/rfp/social-deduction-game) — On-chain Among Us: hidden roles as encrypted notes, night actions as private transfers, provably correct anonymous vote tallies.
+
+**Infrastructure**
+
+- [Cross-Chain Privacy Hub](https://strk20.starknet.io/rfp/cross-chain-privacy-hub) — One-click privacy from any chain: bridge in, hold private, withdraw to any chain with zero on-chain link. Starknet as the privacy layer of crypto.
+- [Privacy Wallet](https://strk20.starknet.io/rfp/privacy-wallet) — An Umbra-style privacy wallet: publish once, receive privately, spend freely — powered entirely by the existing pool. The hard parts already ship; what's missing is the UI.
 
 ## Guides & Docs
 
