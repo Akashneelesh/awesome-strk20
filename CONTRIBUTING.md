@@ -7,7 +7,7 @@ Thanks for helping grow the list of resources for building private apps on Stark
 1. Fork the repo and edit `README.md`.
 2. Add your entry to the most fitting section, keeping the existing format:
    ```
-   - [Name](https://url) — One sentence describing what it is and why it's useful.
+   - [Name](https://url) - One sentence describing what it is and why it's useful.
    ```
 3. Keep the list alphabetical or logical within a section; don't duplicate existing entries.
 

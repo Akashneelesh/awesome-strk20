@@ -73,7 +73,7 @@ export function App() {
         >
           {accounts.map((acc, index) => (
             <option key={acc.address} value={index}>
-              {acc.name} — {truncateAddress(acc.address)}
+              {acc.name} - {truncateAddress(acc.address)}
             </option>
           ))}
         </select>
@@ -133,7 +133,7 @@ export function App() {
 
       {activeAccount && mode === "claim" && !hasValidViewingKey && (
         <div className="alert">
-          This account has viewing key 0x0 — claiming will auto-register it, but
+          This account has viewing key 0x0 - claiming will auto-register it, but
           you need a valid viewing key configured.
         </div>
       )}
@@ -149,7 +149,7 @@ export function App() {
       )}
 
       <footer className="footer">
-        Private Escrow — Deferred delivery for unregistered recipients
+        Private Escrow - Deferred delivery for unregistered recipients
       </footer>
     </div>
   );

@@ -92,7 +92,7 @@ export function DepositPanel({ account, provider, transfers, activeAddress, conf
         .execute({ provingBlockId: (await provider.getBlockNumber()) - 10 });
 
       if (!result.callAndProof) {
-        setStatus("Failed to build deposit transaction — no callAndProof returned.");
+        setStatus("Failed to build deposit transaction - no callAndProof returned.");
         return;
       }
 
@@ -122,7 +122,7 @@ export function DepositPanel({ account, provider, transfers, activeAddress, conf
       <p className="panel-description">
         Deposit tokens from your private balance into escrow. The deposit goes
         through the privacy pool so your identity stays hidden. Share the
-        generated link with the recipient — they can claim even if they haven't
+        generated link with the recipient - they can claim even if they haven't
         registered in the pool yet.
       </p>
 
@@ -141,14 +141,14 @@ export function DepositPanel({ account, provider, transfers, activeAddress, conf
           <tbody>
             <tr>
               <td>Public (ERC20)</td>
-              <td>{publicBalance !== null ? publicBalance.toString() : "—"}</td>
+              <td>{publicBalance !== null ? publicBalance.toString() : "-"}</td>
             </tr>
             <tr>
               <td>Private (Pool)</td>
               <td>
                 {privateBalance !== null
                   ? `${privateBalance.toString()} (${noteCount} note${noteCount !== 1 ? "s" : ""})`
-                  : "—"}
+                  : "-"}
               </td>
             </tr>
           </tbody>

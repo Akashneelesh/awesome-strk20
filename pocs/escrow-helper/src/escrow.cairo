@@ -25,18 +25,18 @@ pub trait IEscrow<T> {
     ///
     /// Dispatches on `operation`:
     ///
-    /// **Deposit** — Stores a commitment backed by tokens the pool already transferred to this
+    /// **Deposit** - Stores a commitment backed by tokens the pool already transferred to this
     /// contract. Returns an empty span (tokens stay in escrow).
-    /// - `commitment_hash` — `poseidon(ESCROW_COMMITMENT_TAG, secret)` computed off-chain.
-    /// - `token` — ERC-20 token address.
-    /// - `amount` — Token amount to escrow.
-    /// - `secret`, `note_id` — ignored.
+    /// - `commitment_hash` - `poseidon(ESCROW_COMMITMENT_TAG, secret)` computed off-chain.
+    /// - `token` - ERC-20 token address.
+    /// - `amount` - Token amount to escrow.
+    /// - `secret`, `note_id` - ignored.
     ///
-    /// **Claim** — Verifies `hash(secret)` matches a stored commitment, marks it claimed,
+    /// **Claim** - Verifies `hash(secret)` matches a stored commitment, marks it claimed,
     /// approves the caller (privacy contract) to pull tokens, and returns the deposit instruction.
-    /// - `secret` — The preimage whose hash matches the stored commitment.
-    /// - `note_id` — The open note identifier (computed by the SDK and passed in calldata).
-    /// - `commitment_hash`, `token`, `amount` — ignored.
+    /// - `secret` - The preimage whose hash matches the stored commitment.
+    /// - `note_id` - The open note identifier (computed by the SDK and passed in calldata).
+    /// - `commitment_hash`, `token`, `amount` - ignored.
     fn privacy_invoke(
         ref self: T,
         operation: EscrowOperation,

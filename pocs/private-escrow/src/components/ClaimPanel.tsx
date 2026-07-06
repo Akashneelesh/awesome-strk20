@@ -53,7 +53,7 @@ export function ClaimPanel({ account, provider, transfers, activeAddress, config
       setPrivateBalance(total);
       setNoteCount(notes.length);
     } catch {
-      // Silently ignore — new accounts may not have notes yet
+      // Silently ignore - new accounts may not have notes yet
       setPrivateBalance(0n);
       setNoteCount(0);
     } finally {
@@ -187,14 +187,14 @@ export function ClaimPanel({ account, provider, transfers, activeAddress, config
           <tbody>
             <tr>
               <td>Public (ERC20)</td>
-              <td>{publicBalance !== null ? publicBalance.toString() : "—"}</td>
+              <td>{publicBalance !== null ? publicBalance.toString() : "-"}</td>
             </tr>
             <tr>
               <td>Private (Pool)</td>
               <td>
                 {privateBalance !== null
                   ? `${privateBalance.toString()} (${noteCount} note${noteCount !== 1 ? "s" : ""})`
-                  : "—"}
+                  : "-"}
               </td>
             </tr>
           </tbody>

@@ -275,7 +275,7 @@ export function useAirdrop(
 
             updateRecipientStatus(address, "proving");
             try {
-              // Fresh discovery for each transfer — same pattern as the demo app.
+              // Fresh discovery for each transfer - same pattern as the demo app.
               // This ensures channels and notes are accurate for each transfer.
               const provingBlockId = (await provider.getBlockNumber()) - 10;
               const { callAndProof: transferResult } = await transfers

@@ -4,7 +4,7 @@ import {
   ProvingServiceProofProvider,
   type PrivateTransfersInterface,
 } from "starknet-sdk";
-// @ts-expect-error — deep import into dist, not part of the declared exports
+// @ts-expect-error - deep import into dist, not part of the declared exports
 import { IndexerDiscoveryProvider } from "starknet-sdk/dist/internal/indexer-discovery.js";
 import type { AppConfig, AccountConfig } from "./config.ts";
 import { NoValidateProofProvider } from "./proof-provider.ts";

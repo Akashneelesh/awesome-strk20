@@ -1,5 +1,5 @@
 import type { RpcProvider, constants } from "starknet";
-// @ts-expect-error — deep import into dist, not part of the declared exports
+// @ts-expect-error - deep import into dist, not part of the declared exports
 import { CallMockProofProvider } from "starknet-sdk/dist/testing/mock-proving.js";
 import type {
   Proof,

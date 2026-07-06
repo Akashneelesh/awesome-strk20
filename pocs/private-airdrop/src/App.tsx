@@ -46,7 +46,7 @@ export function App() {
         >
           {accounts.map((acc, index) => (
             <option key={acc.address} value={index}>
-              {acc.name} {acc.admin ? "(Admin)" : ""} — {truncateAddress(acc.address)}
+              {acc.name} {acc.admin ? "(Admin)" : ""} - {truncateAddress(acc.address)}
             </option>
           ))}
         </select>
@@ -80,7 +80,7 @@ export function App() {
 
       {activeAccount && !hasValidViewingKey && (
         <div className="neon-alert neon-alert-error">
-          This account has viewing key 0x0 — it cannot interact with the privacy pool.
+          This account has viewing key 0x0 - it cannot interact with the privacy pool.
         </div>
       )}
 
@@ -116,7 +116,7 @@ export function App() {
       )}
 
       <footer className="neon-footer">
-        Anonymous Airdrop — Built with Starknet Privacy SDK
+        Anonymous Airdrop - Built with Starknet Privacy SDK
       </footer>
     </div>
   );

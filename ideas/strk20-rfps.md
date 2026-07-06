@@ -1,23 +1,23 @@
-# STRK[20] — Request for Startups (RFPs)
+# STRK[20] - Request for Startups (RFPs)
 
-_Source: https://strk20.starknet.io/rfp — scraped 2026-07-06_
+_Source: https://strk20.starknet.io/rfp - scraped 2026-07-06_
 
 These are problems the STRK[20] team wants startups to tackle on their standard for compliant, programmable privacy. 12 ideas total.
 
 ## Contents
 
-1. [Encrypted on-chain messaging via the privacy pool](https://strk20.starknet.io/rfp/private-messaging) — _Social & Communications_
-2. [Provably fair on-chain poker where cheating is mathematically impossible](https://strk20.starknet.io/rfp/private-poker) — _Gaming_
-3. [Trustless, atomic, private OTC settlement for large block trades](https://strk20.starknet.io/rfp/private-otc-settlement) — _Markets & Trading_
-4. [Bonding-curve token launches with hidden buyers, visible price action](https://strk20.starknet.io/rfp/private-pumpfun) — _Markets & Trading_
-5. [Anonymous whistleblower platform with proof-of-authorship](https://strk20.starknet.io/rfp/anonymous-whistleblower) — _Social & Communications_
-6. [One-click privacy from any chain - Starknet as the privacy layer of crypto](https://strk20.starknet.io/rfp/cross-chain-privacy-hub) — _Infrastructure_
-7. [Prediction markets with visible odds and invisible bettors](https://strk20.starknet.io/rfp/private-prediction-market) — _Markets & Trading_
-8. [Sealed-bid auctions where the bids are actually sealed](https://strk20.starknet.io/rfp/sealed-bid-auctions) — _Markets & Trading_
-9. [On-chain Among Us with provably fair roles and anonymous votes](https://strk20.starknet.io/rfp/social-deduction-game) — _Gaming_
-10. [An Umbra-style privacy wallet for Starknet](https://strk20.starknet.io/rfp/privacy-wallet) — _Infrastructure_
-11. [Private payroll and treasury disbursement at company scale](https://strk20.starknet.io/rfp/private-payroll) — _Payments & Money_
-12. [Private subscriptions and creator monetization with Web2-grade UX](https://strk20.starknet.io/rfp/private-subscriptions) — _Payments & Money_
+1. [Encrypted on-chain messaging via the privacy pool](https://strk20.starknet.io/rfp/private-messaging) - _Social & Communications_
+2. [Provably fair on-chain poker where cheating is mathematically impossible](https://strk20.starknet.io/rfp/private-poker) - _Gaming_
+3. [Trustless, atomic, private OTC settlement for large block trades](https://strk20.starknet.io/rfp/private-otc-settlement) - _Markets & Trading_
+4. [Bonding-curve token launches with hidden buyers, visible price action](https://strk20.starknet.io/rfp/private-pumpfun) - _Markets & Trading_
+5. [Anonymous whistleblower platform with proof-of-authorship](https://strk20.starknet.io/rfp/anonymous-whistleblower) - _Social & Communications_
+6. [One-click privacy from any chain - Starknet as the privacy layer of crypto](https://strk20.starknet.io/rfp/cross-chain-privacy-hub) - _Infrastructure_
+7. [Prediction markets with visible odds and invisible bettors](https://strk20.starknet.io/rfp/private-prediction-market) - _Markets & Trading_
+8. [Sealed-bid auctions where the bids are actually sealed](https://strk20.starknet.io/rfp/sealed-bid-auctions) - _Markets & Trading_
+9. [On-chain Among Us with provably fair roles and anonymous votes](https://strk20.starknet.io/rfp/social-deduction-game) - _Gaming_
+10. [An Umbra-style privacy wallet for Starknet](https://strk20.starknet.io/rfp/privacy-wallet) - _Infrastructure_
+11. [Private payroll and treasury disbursement at company scale](https://strk20.starknet.io/rfp/private-payroll) - _Payments & Money_
+12. [Private subscriptions and creator monetization with Web2-grade UX](https://strk20.starknet.io/rfp/private-subscriptions) - _Payments & Money_
 
 ---
 
