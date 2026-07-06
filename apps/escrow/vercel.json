@@ -1,9 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/api/rpc/:path*", "destination": "http://34.170.198.113:9545/rpc/:path*" },
-    { "source": "/api/prover", "destination": "http://34.29.249.119:3000/" },
-    { "source": "/api/prover/:path*", "destination": "http://34.29.249.119:3000/:path*" },
-    { "source": "/api/indexer", "destination": "http://35.192.48.142:8080/" },
-    { "source": "/api/indexer/:path*", "destination": "http://35.192.48.142:8080/:path*" }
-  ]
-}
