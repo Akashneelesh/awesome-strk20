@@ -1,5 +1,7 @@
 # Awesome STRK20 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 
+![Introducing STRK20](./assets/banner.png)
+
 > A curated list of resources, tools, and reference implementations for building private applications on Starknet with **STRK20** - the privacy pool that brings shielded balances, private transfers, and private DeFi to any ERC-20 on Starknet.
 
 STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 into the pool as an encrypted note, and private transfers spend existing notes to create new ones. Every private transaction carries a STARK proof that Starknet verifies in-protocol. Inside the pool, sender, recipient, amounts, and token type are hidden; deposit and withdrawal amounts (the public ERC-20 legs) stay visible.
