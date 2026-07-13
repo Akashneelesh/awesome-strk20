@@ -32,7 +32,7 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 
 *Programmatic access to the pool for wallets and advanced integrators.*
 
-- **Privacy SDK** - A TypeScript client (Apache 2.0) that wraps every step of working with STRK20 notes: registering a viewing key, opening channels and per-token subchannels, generating proofs with a configurable proving backend, and submitting proved transactions on-chain. It also exposes a fluent builder for multi-token, multi-action transactions and a discovery service for syncing notes and balances. The low-level route for wallets and advanced integrations; normal dapps should use the Privacy Wallet API instead. *(Public repository not yet available - link will be added when it opens.)*
+- [Privacy SDK](https://github.com/starkware-libs/starknet-privacy/blob/main/sdk/README.md) - A TypeScript client (Apache 2.0) that wraps every step of working with STRK20 notes: registering a viewing key, opening channels and per-token subchannels, generating proofs with a configurable proving backend, and submitting proved transactions on-chain. It also exposes a fluent builder for multi-token, multi-action transactions and a discovery service for syncing notes and balances. The low-level route for wallets and advanced integrations; normal dapps should use the Privacy Wallet API instead.
 - [starknet.js](https://github.com/starknet-io/starknet.js/releases/tag/v10.4.0) - v10.4.0 adds STRK20 support via `WalletAccountV6`, talking to the user's privacy-enabled wallet under the hood so the dapp never touches the viewing key.
 
 ## Wallet Integration
@@ -102,6 +102,7 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 
 *Where to read next.*
 
+- [STRK20 by Example](https://strk20-by-example.org/) - A one-stop hub of runnable examples for integrating STRK20 into apps: Privacy SDK flows (shield, private transfer, unshield, note discovery), DeFi helper contracts, and Privacy Wallet API integration.
 - [starknet.js docs](https://starknet-js.com/) - The client library docs, including the STRK20 / WalletAccount guides.
 - [Whitepaper](https://eprint.iacr.org/2026/474) - Scalable Compliant Privacy on Starknet.
 
