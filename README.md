@@ -103,6 +103,7 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 *Where to read next.*
 
 - [STRK20 by Example](https://strk20-by-example.org/) - A one-stop hub of runnable examples for integrating STRK20 into apps: Privacy SDK flows (shield, private transfer, unshield, note discovery), DeFi helper contracts, and Privacy Wallet API integration.
+- [STRK20 integration agent skill](https://github.com/starkience/strk20-agent-skills) - An ask, plan & execute skill for coding agents (Claude Code, Codex, Cursor, and more): scans your Starknet repo, picks the right integration route, writes a repo-specific `STRK20_INTEGRATION_PLAN.md`, and builds it phase by phase after your approval - app code only, never your Cairo contracts.
 - [starknet.js docs](https://starknet-js.com/) - The client library docs, including the STRK20 / WalletAccount guides.
 - [Whitepaper](https://eprint.iacr.org/2026/474) - Scalable Compliant Privacy on Starknet.
 
