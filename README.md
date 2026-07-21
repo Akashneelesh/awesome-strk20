@@ -44,6 +44,7 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 - [@starknet-io/types-js v0.10.3](https://www.npmjs.com/package/@starknet-io/types-js/v/0.10.3) - Shared TypeScript types for the Privacy Wallet API surface.
 - [WalletAccount guide - STRK20 with get-starknet v6](https://starknet-js.com/docs/next/guides/account/walletAccount/#with-get-starknet-v6) - Step-by-step guide for wiring a dapp to a privacy-enabled wallet.
 - [Philippe's Wallet-Account reference implementation](https://github.com/PhilippeR26/Starknet-WalletAccount) - A community reference implementation of the wallet-account flow.
+- [STRK20 starter kit](https://github.com/Akashneelesh/strk20-starter-kit) - A lean Next.js starter for privacy dapps via `WalletAccountV6`: wallet picker, shield/unshield/private transfer, shielded balances, and a deployable `privacy_invoke` helper ([live demo](https://starknet-privacy-starter.vercel.app/)).
 - [Wallet Account demo](https://starknet-wallet-account.vercel.app/) - A live test dapp to sanity-check the wallet integration against.
 
 ## Anonymizer & Helper Contracts
