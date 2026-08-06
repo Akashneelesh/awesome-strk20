@@ -34,6 +34,7 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 
 - [Privacy SDK](https://github.com/starkware-libs/starknet-privacy/blob/main/sdk/README.md) - A TypeScript client (Apache 2.0) that wraps every step of working with STRK20 notes: registering a viewing key, opening channels and per-token subchannels, generating proofs with a configurable proving backend, and submitting proved transactions on-chain. It also exposes a fluent builder for multi-token, multi-action transactions and a discovery service for syncing notes and balances. The low-level route for wallets and advanced integrations; normal dapps should use the Privacy Wallet API instead.
 - [starknet.js](https://github.com/starknet-io/starknet.js/releases/tag/v10.4.0) - v10.4.0 adds STRK20 support via `WalletAccountV6`, talking to the user's privacy-enabled wallet under the hood so the dapp never touches the viewing key.
+- [Privacy Bridge](https://github.com/starkware-libs/privacy-bridge) - A value-movement engine (Apache 2.0) that moves USDC between everyday EVM wallets/chains and the pool over Circle's CCTP, so a user can fund a private balance and later withdraw it without the two sides being linked on-chain: deposit from an EVM wallet as a private note, withdraw to a destination EVM chain, bridge back in, or cash out. Ships the framework-agnostic `@starkware-libs/starknet-privacy-bridge` TypeScript engine (plus optional React hooks), the [inbound/outbound Cairo anonymizers](#anonymizer--helper-contracts), and a demo app. All key material derives from a single wallet signature; only the read-only viewing key is ever persisted. Early and moving fast - read the README first.
 
 ## Wallet Integration
 
@@ -54,6 +55,7 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 The usual flow: the pool withdraws, your helper does its work (swap, lend, escrow, or store), and the tokens are credited back as private notes. If anything reverts, the whole operation rolls back, so funds return to the pool and nothing is stranded. Production helper contracts are owned, reviewed, and audited by each builder - StarkWare reference examples are starting points, not a guarantee of production readiness.
 
 - [Escrow helper contract](./pocs/escrow-helper) - A reference `privacy_invoke` Cairo helper (in this repo) that holds ERC-20 tokens against a Poseidon commitment hash, enabling deferred delivery to recipients who aren't registered in the pool yet.
+- [Privacy Bridge anonymizers](https://github.com/starkware-libs/privacy-bridge/tree/main/packages/bridge-anonymizers) - `OutboundAnonymizer` and `InboundAnonymizer`, the cross-chain helper pair behind the [Privacy Bridge](#sdks--client-libraries). The inbound side is the reference for pairing `privacy_invoke` with the pool's `privacy_compute` mechanism: the attested CCTP message and the resulting private note are bound in a single transaction.
 
 ## Proof-of-Concept Apps
 
