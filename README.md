@@ -11,7 +11,9 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 - [Core Protocol](#core-protocol)
 - [SDKs & Client Libraries](#sdks--client-libraries)
 - [Wallet Integration](#wallet-integration)
+- [Shadow Accounts](#shadow-accounts)
 - [Anonymizer & Helper Contracts](#anonymizer--helper-contracts)
+- [Live Apps & Integrations](#live-apps--integrations)
 - [Proof-of-Concept Apps](#proof-of-concept-apps)
 - [App Ideas to Build](#app-ideas-to-build)
 - [Guides & Docs](#guides--docs)
@@ -32,21 +34,32 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 
 *Programmatic access to the pool for wallets and advanced integrators.*
 
-- [Privacy SDK](https://github.com/starkware-libs/starknet-privacy/blob/main/sdk/README.md) - A TypeScript client (Apache 2.0) that wraps every step of working with STRK20 notes: registering a viewing key, opening channels and per-token subchannels, generating proofs with a configurable proving backend, and submitting proved transactions on-chain. It also exposes a fluent builder for multi-token, multi-action transactions and a discovery service for syncing notes and balances. The low-level route for wallets and advanced integrations; normal dapps should use the Privacy Wallet API instead.
-- [starknet.js](https://github.com/starknet-io/starknet.js/releases/tag/v10.4.0) - v10.4.0 adds STRK20 support via `WalletAccountV6`, talking to the user's privacy-enabled wallet under the hood so the dapp never touches the viewing key.
+- [Privacy SDK](https://github.com/starkware-libs/starknet-privacy/blob/main/sdk/README.md) ([v0.14.3-RC.8](https://github.com/starkware-libs/starknet-privacy/releases/tag/PRIVACY-0.14.3-RC.8)) - The Apache-2.0 TypeScript SDK for wallets and advanced integrations. It handles viewing-key registration, channels and per-token subchannels, discovery, proving, and multi-action private transactions. The current release line also exposes `build().shadowAccounts(dappName)` plus commitment and deterministic-address helpers for shadow accounts. Normal connected-wallet dapps should prefer the Wallet API below.
+- [starknet.js v10.8.0](https://github.com/starknet-io/starknet.js/releases/tag/v10.8.0) - The current stable release. `WalletAccountV6` exposes all five STRK20 actions, including `shadow_account_invoke`, and lets a dapp request shadow-account commitments without handling viewing keys or proofs. The v11 line remains on the `next` / prerelease channel.
 - [Privacy Bridge](https://github.com/starkware-libs/privacy-bridge) - A value-movement engine (Apache 2.0) that moves USDC between everyday EVM wallets/chains and the pool over Circle's CCTP, so a user can fund a private balance and later withdraw it without the two sides being linked on-chain: deposit from an EVM wallet as a private note, withdraw to a destination EVM chain, bridge back in, or cash out. Ships the framework-agnostic `@starkware-libs/starknet-privacy-bridge` TypeScript engine (plus optional React hooks), the [inbound/outbound Cairo anonymizers](#anonymizer--helper-contracts), and a demo app. All key material derives from a single wallet signature; only the read-only viewing key is ever persisted. Early and moving fast - read the README first.
 
 ## Wallet Integration
 
-*The application-layer route most dapps should use: ask the user's privacy-enabled wallet to perform the private action via the Privacy Wallet API.*
+*The application-layer route most dapps should use: ask the user's privacy-enabled wallet to perform the private action via the STRK20 Wallet API.*
 
-- [Privacy Wallet API spec v0.10.3](https://github.com/starkware-libs/starknet-specs/releases/tag/v0.10.3) - The specification for the dapp ↔ wallet bridge that lets an app request shield, private-transfer, unshield, and swap actions without managing keys, notes, or proving.
-- [get-starknet](https://github.com/starknet-io/get-starknet) - Wallet connection library; use v6.0.2 (install `@starknet-io/get-starknet-discovery@6.0.2` and `@starknet-io/get-starknet-wallet-standard@6.0.2` explicitly, since 6.x is on the npm `next` tag).
-- [@starknet-io/types-js v0.10.3](https://www.npmjs.com/package/@starknet-io/types-js/v/0.10.3) - Shared TypeScript types for the Privacy Wallet API surface.
-- [WalletAccount guide - STRK20 with get-starknet v6](https://starknet-js.com/docs/next/guides/account/walletAccount/#with-get-starknet-v6) - Step-by-step guide for wiring a dapp to a privacy-enabled wallet.
+- [Starknet Wallet API spec v0.10.4](https://github.com/starkware-libs/starknet-specs/releases/tag/v0.10.4) - The stable specification for the dapp ↔ wallet bridge. It adds shadow-account actions and an optional `valid_until` authorization lifetime to balance reads alongside deposit, private-transfer, withdraw, and invoke actions.
+- [get-starknet](https://github.com/starknet-io/get-starknet) - Wallet connection library; use v6.0.6 (install `@starknet-io/get-starknet-discovery@6.0.6` and `@starknet-io/get-starknet-wallet-standard@6.0.6` explicitly, since 6.x is on the npm `next` tag).
+- [@starknet-io/types-js v0.10.4](https://www.npmjs.com/package/@starknet-io/types-js/v/0.10.4) - Shared TypeScript types for Wallet API v0.10.4, including `STRK20_SHADOW_ACCOUNT_INVOKE_ACTION`.
+- [WalletAccount guide - STRK20 with get-starknet v6](https://starknet-js.com/docs/guides/account/walletAccount/#with-get-starknet-v6) - Step-by-step guide for wiring a dapp to a privacy-enabled wallet.
 - [Philippe's Wallet-Account reference implementation](https://github.com/PhilippeR26/Starknet-WalletAccount) - A community reference implementation of the wallet-account flow.
-- [STRK20 starter kit](https://github.com/Akashneelesh/strk20-starter-kit) - A lean Next.js starter for privacy dapps via `WalletAccountV6`: wallet picker, shield/unshield/private transfer, shielded balances, and a deployable `privacy_invoke` helper ([live demo](https://starknet-privacy-starter.vercel.app/)).
+- [STRK20 Wallet API starter kit](https://github.com/Akashneelesh/strk20-starter-kit) - A lean Next.js starter for privacy dapps via `WalletAccountV6`: wallet picker, shield/unshield/private transfer, shielded balances, and a deployable `privacy_invoke` helper ([live demo](https://starknet-privacy-starter.vercel.app/)).
 - [Wallet Account demo](https://starknet-wallet-account.vercel.app/) - A live test dapp to sanity-check the wallet integration against.
+
+## Shadow Accounts
+
+*Persistent, dapp-scoped pseudonyms that can call ordinary Starknet contracts without exposing the user's controlling wallet.*
+
+A shadow account is not a shielded account: its address, balances, calls, positions, amounts, and timing are public. Its privacy property is unlinkability to the controlling wallet. It has no signing key and is driven only through the canonical anonymizer and privacy pool.
+
+- [Official starknet.js Shadow Accounts guide](https://starknet-js.com/docs/guides/account/walletAccount/#strk20-shadow-accounts) - Covers `shadow_account_invoke`, commitments, deterministic addresses, lazy deployment, and the `all`, `diff`, and `exact` collection policies.
+- [`STRK20_SHADOW_ACCOUNT_INVOKE_ACTION` API reference](https://starknet-js.com/docs/API/type-aliases/STRK20_SHADOW_ACCOUNT_INVOKE_ACTION/) - The current Starknet.js action shape for invoking one or more calls through a shadow account.
+- [STRK20 Shadow Account Starter](https://github.com/starkience/strk20-shadow-account-starter) - A minimal, verified Sepolia starter using `WalletAccountV6`, Wallet API v0.10.4, and the canonical `ShadowAccountAnonymizer`; no backend, dapp-held key, bundled Privacy SDK, or app-specific anonymizer.
+- **Demo:** [Shadow Account Vault](https://shadow-account-test-for-launch.vercel.app/) ([source](https://github.com/starkience/starknet-shadow-vault-example)) - An educational, unaudited Mainnet example in which a shadow account owns a persistent Vesu Prime vSTRK vault position. The code shows shielded STRK entering the public position and vault withdrawals returning to a private note.
 
 ## Anonymizer & Helper Contracts
 
@@ -55,7 +68,20 @@ STRK20 is a note-based privacy pool (not a mixer): shielding deposits an ERC-20 
 The usual flow: the pool withdraws, your helper does its work (swap, lend, escrow, or store), and the tokens are credited back as private notes. If anything reverts, the whole operation rolls back, so funds return to the pool and nothing is stranded. Production helper contracts are owned, reviewed, and audited by each builder - StarkWare reference examples are starting points, not a guarantee of production readiness.
 
 - [Escrow helper contract](./pocs/escrow-helper) - A reference `privacy_invoke` Cairo helper (in this repo) that holds ERC-20 tokens against a Poseidon commitment hash, enabling deferred delivery to recipients who aren't registered in the pool yet.
+- [ShadowAccountAnonymizer](https://github.com/starkware-libs/starknet-privacy/tree/main/packages/shadow_account_anonymizer) - Canonical generic infrastructure that lazily deploys and drives dapp-scoped shadow accounts. Apps supply ordinary Starknet calls; they do not deploy one anonymizer per protocol.
 - [Privacy Bridge anonymizers](https://github.com/starkware-libs/privacy-bridge/tree/main/packages/bridge-anonymizers) - `OutboundAnonymizer` and `InboundAnonymizer`, the cross-chain helper pair behind the [Privacy Bridge](#sdks--client-libraries). The inbound side is the reference for pairing `privacy_invoke` with the pool's `privacy_compute` mechanism: the attested CCTP message and the resulting private note are bound in a single transaction.
+
+## Live Apps & Integrations
+
+*Apps and protocols surfaced in the official [STRK20 ecosystem directory](https://strk20.starknet.io/app/live-apps). Status refers to the STRK20 path, not an audit or endorsement.*
+
+- **Live:** [AVNU](https://app.avnu.fi/) - DEX aggregation with private swaps routed through AVNU's private executor and settled into a new private note.
+- **Live:** [Ekubo](https://app.ekubo.org/) - Concentrated-liquidity DEX with a private swap route through the Ekubo anonymizer.
+- **Live:** [Endur](https://app.endur.fi/) - Liquid staking for STRK and BTC, including STRK20 private-staking flows.
+- **Live:** [OFFMARKET](https://offmarket.cx/) - A shielded route to Polymarket using dedicated inbound and outbound anonymizers so the public Starknet wallet is not linked to the prediction-market position.
+- **Live:** [YieldStark](https://app.yieldstark.xyz/) - Discover and manage Starknet yield opportunities through a STRK20 ecosystem app.
+- **Live:** [Chance](https://harness.chance.cc/) - An agent-transaction verification harness with a live STRK20 private path for mandates and settlement context.
+- **Ecosystem / integration in progress:** [DashX](https://dashx.xyz/) - Cross-border payroll and stablecoin-settlement tooling; a shipped STRK20 private path is not yet publicly documented.
 
 ## Proof-of-Concept Apps
 
@@ -63,12 +89,11 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 
 - [Private Airdrop](./pocs/private-airdrop) - Distribute ERC-20 tokens privately: the sender deposits into the pool, transfers privately to a recipient list, and recipients discover and withdraw. The sender→recipient link is cryptographically hidden on-chain.
 - [Private Escrow](./pocs/private-escrow) - Deferred token delivery to unregistered recipients. A sender deposits against a secret commitment hash through the pool; the recipient claims later with the shared secret, even if they weren't registered at deposit time. Pairs with the [escrow helper contract](./pocs/escrow-helper).
-- [Polymarket Privacy](https://github.com/starkware-libs/polymarket-privacy) - Private swaps on Polymarket: USDC routes through the privacy pool and Circle CCTP via an anonymizer contract so the Polygon account that trades is unlinkable to the user's Starknet identity.
 - [Private Payroll](https://github.com/starkware-industries/private-payroll) - Batch private salary payments through the pool, so recipients and amounts stay confidential.
 - [Private KYC](https://github.com/starkware-industries/private-kyc) - Privacy-preserving KYC / selective disclosure on top of the pool.
 
 > [!NOTE]
-> Several of these PoCs depend on components that are not yet publicly released. The in-repo apps reference the Privacy SDK via `file:../../sdk`, and the escrow helper depends on the `privacy` Cairo library. Some linked repositories above (Polymarket Privacy, Private Payroll, Private KYC) are not yet public - the links will resolve once those repositories are opened. All are provided as **reference implementations** to read and learn from. Replace every placeholder in each `.env.example` with your own values; never commit real private keys.
+> Several of these PoCs depend on components that are not yet publicly released. The in-repo apps reference the Privacy SDK via `file:../../sdk`, and the escrow helper depends on the `privacy` Cairo library. Some linked repositories above (Private Payroll and Private KYC) are not yet public - the links will resolve once those repositories are opened. All are provided as **reference implementations** to read and learn from. Replace every placeholder in each `.env.example` with your own values; never commit real private keys.
 
 ## App Ideas to Build
 
@@ -105,7 +130,7 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 
 *Where to read next.*
 
-- [STRK20 by Example](https://strk20-by-example.org/) - A one-stop hub of runnable examples for integrating STRK20 into apps: Privacy SDK flows (shield, private transfer, unshield, note discovery), DeFi helper contracts, and Privacy Wallet API integration.
+- [STRK20 by Example](https://strk20-by-example.org/) - A one-stop hub of runnable examples for integrating STRK20 into apps: Privacy SDK flows, DeFi helper contracts, Wallet API integration, and dedicated Shadow Account guides.
 - [STRK20 integration agent skill](https://github.com/starkience/strk20-agent-skills) - An ask, plan & execute skill for coding agents (Claude Code, Codex, Cursor, and more): scans your Starknet repo, picks the right integration route, writes a repo-specific `STRK20_INTEGRATION_PLAN.md`, and builds it phase by phase after your approval - app code only, never your Cairo contracts.
 - [starknet.js docs](https://starknet-js.com/) - The client library docs, including the STRK20 / WalletAccount guides.
 - [Whitepaper](https://eprint.iacr.org/2026/474) - Scalable Compliant Privacy on Starknet.
@@ -114,8 +139,8 @@ The usual flow: the pool withdraws, your helper does its work (swap, lend, escro
 
 *Starknet wallets with privacy support.*
 
-- [Ready](https://www.ready.co/) - In-wallet privacy live on mainnet; the current start path for the Privacy Wallet API alongside starknet.js v10.4.0.
-- [Xverse](https://www.xverse.app/) - In-wallet privacy live on mainnet; dapp-facing Privacy Wallet API support is in progress.
+- [Ready](https://www.ready.co/) - In-wallet privacy live on mainnet with dapp-facing Wallet API support; use the stable Starknet.js v10.8.0 compatibility row.
+- [Xverse](https://www.xverse.app/) - In-wallet privacy live on mainnet with Wallet API support through `WalletAccountV6`.
 
 ## Community
 
